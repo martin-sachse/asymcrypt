@@ -1,0 +1,7 @@
+msgid "Whats your public key?"
+msgstr "Wie ist dein öffentlicher Key?"
+
+msgid "Activate asymetric encryption"
+msgstr "Asymetrische Verschlüsselung aktivieren?"
+
+
