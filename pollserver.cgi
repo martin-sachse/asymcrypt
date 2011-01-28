@@ -22,7 +22,7 @@ def openDB
     File.open("asymcrypt_data.yaml"){|f|
       $data = YAML.load(f)}
   else
-    $data = {"db" => {"votes" => {}, "key" => {},
+    $data = {"db" => {"votes" => {}, "keyId" => {}, "key" => {},
         "update_dates" => {}}}
     File.open("asymcrypt_data.yaml", "w") {| f |
       f << $data.to_yaml
@@ -43,17 +43,24 @@ $body = ""
 
 if ($c["service"])
   $service = $c["service"]
-  #hier werden die einzelnen webservices definiert##############
+  #hier werden die einzelnen webservices definiert
   if ($service == "getDB") 
     $body += $data["db"].to_json
   end
   if ($service == "storeDB")
-    $data["db"] = JSON.parse($c["db"])
+    #$data["db"] = JSON.parse($c["db"])
+    #$data["db"] = $c["db"]
     storeDB()
-    $body += $data["db"]
+    $body += $data["db"].inspect
   end
   if ($service == "storeRow")
     $data["db"]["votes"][$c["rowname"]]	= $c["row"]
+    $data["db"]["update_dates"][$c["rowname"]] = DateTime::now()
+    storeDB()
+    openDB()
+  end
+  if ($service == "storeKeyId")
+    $data["db"]["keyId"] = $c["row"]
     $data["db"]["update_dates"][$c["rowname"]] = DateTime::now()
     storeDB()
     openDB()
@@ -64,12 +71,6 @@ if ($c["service"])
     storeDB()
     openDB()
   end
-  #if($service == "deleteRow")
-  #  $data["db"]["votes"].delete($c["rowname"])
-  #  $data["db"]["update_dates"].delete($c["rowname"])
-  #  storeDB()
-  #  VCS.commit("Participant #{$c["rowname"]} was deleted from AES database.")
-  #end
 end
 
 $c.out($header) {$body}
