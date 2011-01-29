@@ -44,8 +44,6 @@ function showParsedTable(dbVotes) {
 		yesVotes[dates[dates.length-1]] = 0;
 	});
 	
-	
-
   //builds the table row for every encrypted participant, counts the yes votes and insert it between the separator_top and the now hidden voting part
 	var participantTRs = new Array();
 	for(participant in participants) {
@@ -88,74 +86,59 @@ function showParsedTable(dbVotes) {
 	$('#summary').show();
 }
 
-/**
-* @todo someday there may be an encryption
-*/
-var keytyp = 0;      // 0=RSA, 1=Elgamal
-var keyid = '3EB51513';
-var pubkey = '-----BEGIN PGP PUBLIC KEY BLOCK-----'+
-'Version: GnuPG/MacGPG2 v2.0.17 (Darwin)'+
+function randomRowName(dbVotes) {
+	var chars = "0123456789ABCDEFGHIJKLMNOPQRSTUVWXTZabcdefghiklmnopqrstuvwxyz";
+	var string_length = 4;
+	var randomstring = '';
+	for (var i=0; i<string_length; i++) {
+		var rnum = Math.floor(Math.random() * chars.length);
+		randomstring += chars.substring(rnum,rnum+1);
+	}
+	/*try {
+	  dbVotes[randomstring];
+	} catch(err) {
+	  randomstring = randomRowName(dbVotes);
+	}*/
+	
+	return randomstring;
+}
 
-'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'+
-'=aixo'+
-'-----END PGP PUBLIC KEY BLOCK-----';
-
-function encrypt(text) {
-
-  return doEncrypt(keyid, keytyp, pubkey, text);
+function encrypt(keyId, publicKey, text) { 
+  encryption = 0; // 0-> RSA, 1->Algamal
+  return doEncrypt(keyId, encryption, publicKey, text); 
 }
 
 /**
 * saves the encrypted data to the asymcrypt_data.yaml
 */
-function savePollData(publicKey,participant,pollData) {
+function savePollData(participant, keyId, publicKey, pollData, dbVotes) {
 
 	var saveData = new Array();
-	var encryptedName = participant;//muss gecrypted werden
+	saveData[0] = participant;
 	
 	for (var index in pollData) {
 		var encryptionData = pollData[index].split('_');
 		encryptionInfo = encryptionData[encryptionData.length-2];
 		encryptionAnswer = encryptionData[encryptionData.length-1]; 
-		saveData[index] = JSON.stringify(new Array(encryptionInfo, encryptionAnswer)); //muss gecrypted werden	
+		save = new Array(encryptionInfo, encryptionAnswer);
+		saveData[parseInt(index)+1] = save;
 	}
+	saveData = encrypt(keyId, publicKey, JSON.stringify(saveData));
 	$.ajax({url: extDir + "/pollserver.cgi?pollID=" + pollID + 
-	    	"&service=" + "storeRow" +
-	    	"&row=" + JSON.stringify(saveData) +
-	    	"&rowname=" + encryptedName,//JSON.stringify(encryptedName),
-	    	method:"get"
+		"&service=" + "storeRow" +
+		"&row=" + JSON.stringify(saveData).replace(/\++/g, '%2B') +
+		"&rowname=" + randomRowName(),
+		method:"get"
 	});
 }
+
+/**
+*
+*/
+function getEncryptedRow(id, content) {
+  return row = '<tr id="' + id + '"><td colspan="'+$('#separator_top td').attr('colspan')+'" style="text-align:center;background-color:lightblue; width:'+$('#separator_top td').attr('width')+'">' + content + '</td></tr>';
+}
+  
 
 $(document).ready(function() {
 	
@@ -165,39 +148,34 @@ $(document).ready(function() {
       "&service=" + "getDB",
       method:"get",
       success:function(r){
-  			db = JSON.parse(r);
-  			$('#summary').hide();
-  			$('.sortsymb').hide();
-  			if(db.votes != 'undefined') {
-  				$('</br><input type="button" id="showbutton" value="Show">').click( function() {
-  					showParsedTable(db.votes);
-  					test = encrypt('Das ist ein erster Test'+'\r\n'); //Encryption Function  
-  					alert(test);
-  				}).insertAfter('#savebutton');
-  			}
-  			
-  			//shows the encrypted data @todo needs a better place
-  			$('#separator_top').click( function() {
-  				$('#polltable').slideUp(1000, function() {
-  					$('#polltable table').hide();
-  					$('#polltable form').html('<p>Copy entcrypted text,decrypt and copy back</p><br/><textarea>Schtring</textarea>');
-  					$('#polltable').slideDown(1000);
-  				});
-  			}); 
-        
-        //catches the submit event, so the data will not be saved in the normal data.yaml, but in the asymcrypt_data.yaml
-  			$('#polltable form').submit( function() {
-  				
-  				var participant = $('#add_participant_input').val();			
-  				var pollData = evaluateTable();
-  				savePollData(db.key,participant,pollData);
-   				
-   				//shows the vote encrypted message
-  				$('<tr><td colspan="'+$('#separator_top td').attr('colspan')+'" style="text-align:center;background-color:lightblue; width:'+$('#separator_top td').attr('width')+'">Your vote is saved and encrypted</td></tr>').insertBefore($('#add_participant_input').parent().parent());
-  				$('#add_participant').hide(); 	
-  				return false;
-  						
-  		  }); 
+		var db = JSON.parse(r);
+		var keyId = db.keyId;
+		var publicKey = db.key.replace(/\s+/g, '+');
+		$('#summary').hide();
+		$('.sortsymb').hide();
+		if(JSON.stringify(db.votes) != '{}') {
+			$(getEncryptedRow('encryptedData', 'Encrypted Polldata')).click( function() {
+				var encryptedRows = "";
+				var i = 0;
+				for (participant in db.votes) {
+					encryptedRows += getEncryptedRow(i++, '<textarea rows="1" cols="1" style="width: 95%; margin-top:5px">' + JSON.parse(db.votes[participant]) + '</textarea>');
+				}
+				$('#encryptedData').replaceWith(encryptedRows);
+			}).insertBefore('#add_participant');
+		}
+    
+		//catches the submit event, so the data will not be saved in the normal data.yaml, but in the asymcrypt_data.yaml
+		$('#polltable form').submit( function() {
+			
+			var participant = $('#add_participant_input').val();			
+			var pollData = evaluateTable();
+			savePollData(participant, keyId, publicKey, pollData, db.votes);
+			
+			//shows the vote encrypted message
+			$(getEncryptedRow("", 'Your vote is encrypted and saved.')).insertBefore($('#add_participant'));
+			$('#add_participant, #encryptedData').hide();
+			return false;
+  		}); 
   	  }
     });
   }

@@ -1,3 +1,38 @@
+/**
+* creates asymcrypt_data.yaml and writes keyId and publicKey into it
+*/
+function saveData(publicKey) {
+	var pKey = new getPublicKey(publicKey);
+	var keyId = pKey.keyid;
+	var publicKey = pKey.pkey.replace(/\n/g,'');
+	
+	$.ajax({url: extDir + "/pollserver.cgi?pollID=" + pollID + 
+  	"&service=" + "storeDB" +
+    "&db=" + "asym",
+    method:"get",
+    success:function() {
+      $.ajax({url: extDir + "/pollserver.cgi?pollID=" + pollID + 
+        "&service=" + "storeKeyId" +
+      	"&row=" + keyId +
+        "&rowname=" + 'keyId',
+        method:"get",
+        success:function() {
+          $.ajax({url: extDir + "/pollserver.cgi?pollID=" + pollID + 
+            "&service=" + "storeKey" +
+            "&row=" + publicKey +
+            "&rowname=" + 'publicKey',
+        	  method:"get",
+        	  success:function() {
+        	    //not possible under success, where function is called, because page change would be faster than script
+        	    $('#ac_admin').unbind().submit();
+        	  }
+          });
+        }
+      });
+	}
+  });
+}
+
 $(document).ready(function(){
 
 	/**
@@ -56,36 +91,10 @@ $(document).ready(function(){
     	  var keyId = person[0].split("/")[1];
     	  $.ajax({url: '../extensions/asymcrypt/getPubKey.php?function=pubKey&name='+ name + '&keyid=' + keyId,
     	    method:"get",
-    	    success:function(r){
-      	    if($('#asymID').length != 0) {
-      	    	$.ajax({url: extDir + "/pollserver.cgi?pollID=" + pollID + 
-      	        	"&service=" + "storeDB" +
-      	    	    "&db=" + "asym",
-      	    	    method:"get",
-      	    	    success:function() {
-      	    	      $.ajax({url: extDir + "/pollserver.cgi?pollID=" + pollID + 
-      	    	          "&service=" + "storeKeyId" +
-      	    	        	"&row=" + keyId +
-      	    	          "&rowname=" + 'keyId',
-      	    	          method:"get",
-      	    	          success:function() {
-      	    	            $.ajax({url: extDir + "/pollserver.cgi?pollID=" + pollID + 
-      	    	            	    "&service=" + "storeKey" +
-      	    	                	"&row=" + r +
-      	    	            	    "&rowname=" + 'publicKey',
-      	    	            	    method:"get",
-      	    	            	    success:function() {
-      	    	            	      $('#ac_admin').unbind().submit();
-      	    	            	    }
-      	    	            });
-      	    	          }
-      	    	      });
-      	    	    }
-      	      });
-      	      
-      	    }
-      	  }
-      	});
+    	    success:function(r) {
+    	      saveData(r);
+    	    }
+    	  });
   		}
   		return false;	 
   	});
