@@ -135,7 +135,8 @@ $(document).ready(function() {
 		var publicKey = db.key.replace(/\s+/g, '+');
 		$('.sortsymb').hide();
 		if(JSON.stringify(db.votes) != '{}') {
-			$(getEncryptedRow('encryptedData', 'Encrypted Polldata')).click( function() {
+		    var rowText = _('Encrypted Polldata');
+			$(getEncryptedRow('encryptedData', rowText)).click( function() {
 				var encryptedRows = "";
 				var i = 0;
 				for (participant in db.votes) {

@@ -1,7 +1,14 @@
-msgid "Whats your public key?"
-msgstr "Wie ist dein öffentlicher Key?"
+msgid "Whats your PGP name?"
+msgstr "Wie ist dein PGP Name?"
 
 msgid "Activate asymetric encryption"
 msgstr "Asymetrische Verschlüsselung aktivieren?"
 
+msgid "Search"
+msgstr "Suchen"
 
+msgid "Encrypted Polldata"
+msgstr "Verschlüsselte Umfragen"
+
+msgid "Save"
+msgstr "Speichern"

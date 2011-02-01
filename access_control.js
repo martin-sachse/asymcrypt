@@ -39,7 +39,7 @@ $(document).ready(function(){
 	* if access_control.cgi is in the view where the admin password is set, asynchronous encryption will be an option
 	*/
 	if ($('#ac_admin #password0').length == 1) {
-		var keytext = _("Activate asymetric encryption")
+		var keytext = _("Activate asymetric encryption");
 		$('<tr><td></td><td><input type="checkbox" id="asymcrypt" name="asymcrypt" /><label for="asymcrypt">'+keytext+'</label></td></tr>').insertBefore($('#ac_admin tr:last'));
 	}
 	
@@ -47,8 +47,10 @@ $(document).ready(function(){
 	* if the checkbox becomes activ, an input for the pgp key will be shown
 	*/
 	$('#asymcrypt').click( function() {
+	    var btext = _("Search");
+	    $('#ac_admin :submit').val(btext);
 		if($('#asymcrypt:checked').length == 1 && $('#asymID').length == 0) {
-			var question = _("Whats your public key?");
+			var question = _("Whats your PGP key name?");
 			$('<tr><td></td><td><label for="asymID">'+question+'</label><br/><input id="asymID" name="asymID" /></td></tr>').insertBefore($('#ac_admin tr:last'));
 		} else if ($('#asymcrypt:checked').length == 0 && $('#asymID').length == 1) {
 			$('#asymID').parents('tr').remove();
@@ -73,6 +75,8 @@ $(document).ready(function(){
       	        }
       	        select += '</select></td></tr>';
       	        $(select).insertBefore($('#ac_admin tr:last'));
+      	        var btext = _("Save");
+	            $('#ac_admin :submit').val(btext);
     	        } else {
     	          var select = '<select name="publicKey" id="publicKey" size="1" style="width:300px">';
     	          for (var index in possiblePublicKeys) {
