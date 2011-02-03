@@ -1,3 +1,6 @@
+//global variable needet for encrypted input change
+var inputContent;
+
 /**
 *  read all checked radio boxes from the table and returns the id which contains the poll item and the decision
 */
@@ -68,7 +71,7 @@ function parseRow(rowId, decodedText) {
   }
 }
 
-function randomRowName(dbVotes) {
+function randomRowName() {
 	var chars = "0123456789ABCDEFGHIJKLMNOPQRSTUVWXTZabcdefghiklmnopqrstuvwxyz";
 	var string_length = 4;
 	var randomstring = '';
@@ -76,11 +79,6 @@ function randomRowName(dbVotes) {
 		var rnum = Math.floor(Math.random() * chars.length);
 		randomstring += chars.substring(rnum,rnum+1);
 	}
-	/*try {
-	  dbVotes[randomstring];
-	} catch(err) {
-	  randomstring = randomRowName(dbVotes);
-	}*/
 	
 	return randomstring;
 }
@@ -93,7 +91,7 @@ function encrypt(keyId, publicKey, text) {
 /**
 * saves the encrypted data to the asymcrypt_data.yaml
 */
-function savePollData(participant, keyId, publicKey, pollData, dbVotes) {
+function savePollData(participant, keyId, publicKey, pollData) {
 
 	var saveData = new Array();
 	saveData[0] = participant;
@@ -106,6 +104,7 @@ function savePollData(participant, keyId, publicKey, pollData, dbVotes) {
 		saveData[parseInt(index)+1] = save;
 	}
 	saveData = encrypt(keyId, publicKey, JSON.stringify(saveData));
+	alert(JSON.stringify(saveData).replace(/\++/g, '%2B'));
 	$.ajax({url: extDir + "/pollserver.cgi?pollID=" + pollID + 
 		"&service=" + "storeRow" +
 		"&row=" + JSON.stringify(saveData).replace(/\++/g, '%2B') +
@@ -134,36 +133,44 @@ $(document).ready(function() {
 		var keyId = db.keyId;
 		var publicKey = db.key.replace(/\s+/g, '+');
 		$('.sortsymb').hide();
+        
 		if(JSON.stringify(db.votes) != '{}') {
-		    var rowText = _('Encrypted Polldata');
-			$(getEncryptedRow('encryptedData', rowText)).click( function() {
-				var encryptedRows = "";
-				var i = 0;
-				for (participant in db.votes) {
-					encryptedRows += getEncryptedRow('encRow' + i++, '<textarea rows="1" cols="1" style="width: 95%; margin-top:5px">' + JSON.parse(db.votes[participant]) + '</textarea>');
-				}
-				$('#encryptedData').replaceWith(encryptedRows);
-			}).insertBefore('#add_participant');
-		}
-    
-		//catches the submit event, so the data will not be saved in the normal data.yaml, but in the asymcrypt_data.yaml
-		$('#polltable form').submit( function() {
-			
-			var participant = $('#add_participant_input').val();			
-			var pollData = evaluateTable();
-			savePollData(participant, keyId, publicKey, pollData, db.votes);
-			
-			//shows the vote encrypted message
-			$(getEncryptedRow("", 'Your vote is encrypted and saved.')).insertBefore($('#add_participant'));
-			$('#add_participant, #encryptedData').hide();
-			return false;
-  		}); 
-		$('tr[id^="encRow"] textarea').live('change', function() {
-			var rowId = $(this).parent().parent().attr('id');
-			var decodedText = $(this).val();
-			parseRow(rowId, decodedText);
-		});
-  	  }
+          var rowText = _('Encrypted Polldata');
+          $(getEncryptedRow('encryptedData', rowText)).click( function() {
+            var encryptedRows = "";
+            var i = 0;
+
+            for (participant in db.votes) {
+             encryptedRows += getEncryptedRow('encRow' + i++, '<textarea rows="1" cols="1" style="width: 95%; margin-top:5px">' + JSON.parse(db.votes[participant]) + '</textarea>');
+            }
+            $('#encryptedData').replaceWith(encryptedRows);
+          }).insertBefore('#add_participant');
+        }
+
+        //catches the submit event, so the data will not be saved in the normal data.yaml, but in the asymcrypt_data.yaml
+        $('#polltable form').submit( function() {
+
+          var participant = $('#add_participant_input').val();			
+          var pollData = evaluateTable();
+          savePollData(participant, keyId, publicKey, pollData);
+
+          //shows the vote encrypted message
+          $(getEncryptedRow("", 'Your vote is encrypted and saved.')).insertBefore($('#add_participant'));
+          $('#add_participant, #encryptedData').hide();
+          return false;
+        });
+        
+        $('tr[id^="encRow"] textarea').live('focusin', function() {
+          inputContent = $(this).val();
+          $(this).select();
+        }).live('focusout', function() {
+          if($(this).val() != inputContent) {  
+            var rowId = $(this).parent().parent().attr('id');
+            var decodedText = $(this).val();
+            parseRow(rowId, decodedText);
+          }
+  	    });
+      }
     });
   }
 });
