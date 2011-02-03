@@ -104,7 +104,6 @@ function savePollData(participant, keyId, publicKey, pollData) {
 		saveData[parseInt(index)+1] = save;
 	}
 	saveData = encrypt(keyId, publicKey, JSON.stringify(saveData));
-	alert(JSON.stringify(saveData).replace(/\++/g, '%2B'));
 	$.ajax({url: extDir + "/pollserver.cgi?pollID=" + pollID + 
 		"&service=" + "storeRow" +
 		"&row=" + JSON.stringify(saveData).replace(/\++/g, '%2B') +

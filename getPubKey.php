@@ -6,6 +6,7 @@
   function people() {
     $name = str_replace(" ", "+", $_GET["name"]);
     $page = fopen ("http://pgp.zdv.uni-mainz.de:11371/pks/lookup?op=index&search=".$name, "r");
+    $contents = "";
     while (!feof($page)) {
       $contents .= fread($page, 8192);
     }
@@ -16,6 +17,7 @@
   function pubKey() {
     $name = str_replace(" ", "+", $_GET["name"]);
     $page = fopen ("http://pgp.zdv.uni-mainz.de:11371/pks/lookup?op=index&search=".$name, "r");
+    $contents = "";
     while (!feof($page)) {
       $contents .= fread($page, 8192);
     }
@@ -27,6 +29,7 @@
         $link = substr($content, $start, $end);
         $link = "http://pgp.zdv.uni-mainz.de:11371"."".$link;
         $pubKeyPage = fopen ($link, "r");
+        $pubKey = "";
         while (!feof($pubKeyPage)) {
           $pubKey .= fread($pubKeyPage, 8192);
         }

@@ -47,13 +47,15 @@ $(document).ready(function(){
 	* if the checkbox becomes activ, an input for the pgp key will be shown
 	*/
 	$('#asymcrypt').click( function() {
-	    var btext = _("Search");
-	    $('#ac_admin :submit').val(btext);
 		if($('#asymcrypt:checked').length == 1 && $('#asymID').length == 0) {
 			var question = _("Whats your PGP name?");
 			$('<tr><td></td><td><label for="asymID">'+question+'</label><br/><input id="asymID" name="asymID" /></td></tr>').insertBefore($('#ac_admin tr:last'));
+			var btext = _("Search");
+		    $('#ac_admin :submit').val(btext);
 		} else if ($('#asymcrypt:checked').length == 0 && $('#asymID').length == 1) {
 			$('#asymID').parents('tr').remove();
+			var btext = _("Save");
+		    $('#ac_admin :submit').val(btext);
 		}
 	});
 	
