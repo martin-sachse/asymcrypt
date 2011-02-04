@@ -12,3 +12,6 @@ msgstr "Verschlüsselte Umfragen"
 
 msgid "Save"
 msgstr "Speichern"
+
+msgid "The name could not be found<br />or the request was to inexplicit."
+msgstr "Der Name konnte nicht gefunden werden,<br /> oder die Anfrage war zu ungenau."

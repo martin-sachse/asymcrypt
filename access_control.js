@@ -67,6 +67,13 @@ $(document).ready(function(){
     	if($('#publicKey').length == 0 || $('#publicKey').val() == "" ) {
     	  $.ajax({url: '../extensions/asymcrypt/getPubKey.php?function=people&name=' + $('#asymID').val(),
     	    method:"get",
+    	    timeout: (10 * 1000),
+    	    error:function(r, strError){
+    		  if($('#error').length == 0) {
+    			var error = _("The name could not be found<br />or the request was to inexplicit.") 
+    			$('<p id="error" style="color:red">'+error+'</p>').insertBefore('#ac_admin :submit');
+    		  }
+    	  	},
     	    success:function(r){
     	      var possiblePublicKeys = JSON.parse(r);
     	      if(possiblePublicKeys.length > 0) {
@@ -79,6 +86,7 @@ $(document).ready(function(){
       	        $(select).insertBefore($('#ac_admin tr:last'));
       	        var btext = _("Save");
 	            $('#ac_admin :submit').val(btext);
+	            $('#error').remove();
     	        } else {
     	          var select = '<select name="publicKey" id="publicKey" size="1" style="width:300px">';
     	          for (var index in possiblePublicKeys) {
