@@ -62,56 +62,55 @@ $(document).ready(function(){
 	/**
 	* on submit, the value of the input will be send to the asymcrypt_data.yaml, after that the submit event will be executed
 	*/
-	if ($('#ac_admin #password0').length == 1 && $('#asymcrypt:checked').length == 1) {
-  	$('#ac_admin').submit( function() {
-    	if($('#publicKey').length == 0 || $('#publicKey').val() == "" ) {
-    	  $.ajax({url: '../extensions/asymcrypt/getPubKey.php?function=people&name=' + $('#asymID').val(),
-    	    method:"get",
-    	    timeout: (10 * 1000),
-    	    error:function(r, strError){
-    		  if($('#error').length == 0) {
-    			var error = _("The name could not be found<br />or the request was to inexplicit.") 
-    			$('<p id="error" style="color:red">'+error+'</p>').insertBefore('#ac_admin :submit');
-    		  }
-    	  	},
-    	    success:function(r){
-    	      var possiblePublicKeys = JSON.parse(r);
-    	      if(possiblePublicKeys.length > 0) {
-    	        if($('#publicKey').length == 0) {
-      	        var select = '<tr><td></td><td><select name="publicKey" id="publicKey" size="1" style="width:300px">';
-      	        for (var index in possiblePublicKeys) {
-      	          if(possiblePublicKeys[index] != null) select += '<option>' + possiblePublicKeys[index] + '</option>';
-      	        }
-      	        select += '</select></td></tr>';
-      	        $(select).insertBefore($('#ac_admin tr:last'));
-      	        var btext = _("Save");
-	            $('#ac_admin :submit').val(btext);
-	            $('#error').remove();
-    	        } else {
-    	          var select = '<select name="publicKey" id="publicKey" size="1" style="width:300px">';
-    	          for (var index in possiblePublicKeys) {
-    	            if(possiblePublicKeys[index] != null) select += '<option>' + possiblePublicKeys[index] + '</option>';
-    	          }
-    	          select += '</select>';
-    	          $('#publicKey').replaceWith(select);
-    	        }
-    	      }
-    	    }
-    	  });
-        return false;
-    	} else {
-    	  var person = $('#publicKey').val().split(" ");
-    	  var name = person[2] + " " + person[3];
-    	  var keyId = person[0].split("/")[1];
-    	  $.ajax({url: '../extensions/asymcrypt/getPubKey.php?function=pubKey&name='+ name + '&keyid=' + keyId,
-    	    method:"get",
-    	    success:function(r) {
-    	      saveData(r);
-    	    }
-    	  });
-  		}
-  		return false;	 
-  	});
-  }
-  return false;
+ 	$('#ac_admin').submit( function() {
+ 	  if ($('#ac_admin #password0').length == 1 && $('#asymcrypt:checked').length == 1) {
+     	if($('#publicKey').length == 0 || $('#publicKey').val() == "" ) {
+     	  $.ajax({url: '../extensions/asymcrypt/getPubKey.php?function=people&name=' + $('#asymID').val(),
+     	    method:"get",
+     	    timeout: (10 * 1000),
+     	    error:function(r, strError){
+     		  if($('#error').length == 0) {
+     			var error = _("The name could not be found<br />or the request was to inexplicit.") 
+     			$('<p id="error" style="color:red">'+error+'</p>').insertBefore('#ac_admin :submit');
+     		  }
+     	  	},
+     	    success:function(r){
+     	      var possiblePublicKeys = JSON.parse(r);
+     	      if(possiblePublicKeys.length > 0) {
+     	        if($('#publicKey').length == 0) {
+       	        var select = '<tr><td></td><td><select name="publicKey" id="publicKey" size="1" style="width:300px">';
+       	        for (var index in possiblePublicKeys) {
+       	          if(possiblePublicKeys[index] != null) select += '<option>' + possiblePublicKeys[index] + '</option>';
+       	        }
+       	        select += '</select></td></tr>';
+       	        $(select).insertBefore($('#ac_admin tr:last'));
+       	        var btext = _("Save");
+              $('#ac_admin :submit').val(btext);
+              $('#error').remove();
+     	        } else {
+     	          var select = '<select name="publicKey" id="publicKey" size="1" style="width:300px">';
+     	          for (var index in possiblePublicKeys) {
+     	            if(possiblePublicKeys[index] != null) select += '<option>' + possiblePublicKeys[index] + '</option>';
+     	          }
+     	          select += '</select>';
+     	          $('#publicKey').replaceWith(select);
+     	        }
+     	      }
+     	    }
+     	  });
+         return false;
+     	} else {
+     	  var person = $('#publicKey').val().split(" ");
+     	  var name = person[2] + " " + person[3];
+     	  var keyId = person[0].split("/")[1];
+     	  $.ajax({url: '../extensions/asymcrypt/getPubKey.php?function=pubKey&name='+ name + '&keyid=' + keyId,
+     	    method:"get",
+     	    success:function(r) {
+     	      saveData(r);
+     	    }
+     	  });
+   		}
+    return false;
+ 	  } 			 
+ 	});
 });
