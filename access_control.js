@@ -62,7 +62,7 @@ $(document).ready(function(){
 	/**
 	* on submit, the value of the input will be send to the asymcrypt_data.yaml, after that the submit event will be executed
 	*/
-	if ($('#ac_admin #password0').length == 1) {
+	if ($('#ac_admin #password0').length == 1 && $('#asymcrypt:checked').length == 1) {
   	$('#ac_admin').submit( function() {
     	if($('#publicKey').length == 0 || $('#publicKey').val() == "" ) {
     	  $.ajax({url: '../extensions/asymcrypt/getPubKey.php?function=people&name=' + $('#asymID').val(),
