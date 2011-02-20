@@ -5,6 +5,11 @@ function saveData(publicKey) {
 	var pKey = new getPublicKey(publicKey);
 	var keyId = pKey.keyid;
 	var publicKey = pKey.pkey.replace(/\n/g,'');
+	if(pKey.type == "RSA") {
+	  var encryption = 0;
+	} else if(pKey.type == "ELGAMAL") {
+	  var encryption = 1;
+	}
 	
 	$.ajax({url: extDir + "/pollserver.cgi?pollID=" + pollID + 
   	"&service=" + "storeDB" +
@@ -12,24 +17,17 @@ function saveData(publicKey) {
     method:"get",
     success:function() {
       $.ajax({url: extDir + "/pollserver.cgi?pollID=" + pollID + 
-        "&service=" + "storeKeyId" +
-      	"&row=" + keyId +
-        "&rowname=" + 'keyId',
-        method:"get",
-        success:function() {
-          $.ajax({url: extDir + "/pollserver.cgi?pollID=" + pollID + 
-            "&service=" + "storeKey" +
-            "&row=" + publicKey +
-            "&rowname=" + 'publicKey',
-        	  method:"get",
-        	  success:function() {
-        	    //not possible under success, where function is called, because page change would be faster than script
-        	    $('#ac_admin').unbind().submit();
-        	  }
-          });
-        }
+        "&service=" + "storePublicKey" +
+        "&encryption=" + encryption +
+        "&keyId=" + keyId +
+        "&key=" + publicKey,
+    	  method:"get",
+    	  success:function() {
+    	    //not possible under success, where function is called, because page change would be faster than script
+    	    $('#ac_admin').unbind().submit();
+    	  }
       });
-	}
+	  }
   });
 }
 

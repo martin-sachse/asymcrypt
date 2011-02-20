@@ -59,15 +59,10 @@ if ($c["service"])
     storeDB()
     openDB()
   end
-  if ($service == "storeKeyId")
-    $data["db"]["keyId"] = $c["row"]
-    $data["db"]["update_dates"][$c["rowname"]] = DateTime::now()
-    storeDB()
-    openDB()
-  end
-  if ($service == "storeKey")
-    $data["db"]["key"] = $c["row"]
-    $data["db"]["update_dates"][$c["rowname"]] = DateTime::now()
+  if ($service == "storePublicKey")
+    $data["db"]["encryption"] = $c["encryption"]
+    $data["db"]["keyId"] = $c["keyId"]
+    $data["db"]["key"] = $c["key"]
     storeDB()
     openDB()
   end

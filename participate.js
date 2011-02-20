@@ -39,18 +39,18 @@ function parseRow(rowId, decodedText) {
   var decryptedRow = '<tr><td class="name" colspan="2">' + decoded[0] + '</td>';
   for(pollDate in dates) {
     var dateExists = false;
-	for(var i = 1; i < decoded.length; i++) {
-	  if(dates[pollDate] == decoded[i][0]) {
-	    if(decoded[i][1] == 'ayes') {
-	      yesVotes[pollDate] = 1;
-	    }
-        decryptedRow += '<td class="' + decoded[i][1] + '" title="' + decoded[i][0] + ': ' + dates[pollDate].replace(".", " ") + '">' + possibilities[decoded[i][1]] + '</td>';//maybe date when entered 
-        dateExists = true;
-	  }
-	}
-	if(!dateExists) {
-      decryptedRow += '<td class="undecided" title="' + participant + ': ' + dates[pollDate].replace(".", " ") + '">&ndash;</td>';
-	}
+  	for(var i = 1; i < decoded.length; i++) {
+  	  if(dates[pollDate] == decoded[i][0]) {
+  	    if(decoded[i][1] == 'ayes') {
+  	      yesVotes[pollDate] = 1;
+  	    }
+          decryptedRow += '<td class="' + decoded[i][1] + '" title="' + decoded[i][0] + ': ' + dates[pollDate].replace(".", " ") + '">' + possibilities[decoded[i][1]] + '</td>';//maybe date when entered 
+          dateExists = true;
+  	  }
+  	}
+  	if(!dateExists) {
+        decryptedRow += '<td class="undecided" title="' + participant + ': ' + dates[pollDate].replace(".", " ") + '">&ndash;</td>';
+  	}
   }
   decryptedRow += '<td class="date" style="text-align:center">decrypted</td></tr>';
  
@@ -83,15 +83,14 @@ function randomRowName() {
 	return randomstring;
 }
 
-function encrypt(keyId, publicKey, text) { 
-  encryption = 0; // 0-> RSA, 1->Algamal
-  return doEncrypt(keyId, encryption, publicKey, text); 
+function encrypt(encryption, keyId, publicKey, text) { 
+  return doEncrypt(keyId, encryption, publicKey, text); // encryption 0-> RSA, 1->Algamal 
 }
 
 /**
 * saves the encrypted data to the asymcrypt_data.yaml
 */
-function savePollData(participant, keyId, publicKey, pollData) {
+function savePollData(participant, encryption, keyId, publicKey, pollData) {
 
 	var saveData = new Array();
 	saveData[0] = participant;
@@ -103,7 +102,7 @@ function savePollData(participant, keyId, publicKey, pollData) {
 		save = new Array(encryptionInfo, encryptionAnswer);
 		saveData[parseInt(index)+1] = save;
 	}
-	saveData = encrypt(keyId, publicKey, JSON.stringify(saveData));
+	saveData = encrypt(encryption, keyId, publicKey, JSON.stringify(saveData));
 	$.ajax({url: extDir + "/pollserver.cgi?pollID=" + pollID + 
 		"&service=" + "storeRow" +
 		"&row=" + JSON.stringify(saveData).replace(/\++/g, '%2B') +
@@ -129,6 +128,7 @@ $(document).ready(function() {
       method:"get",
       success:function(r){
 		var db = JSON.parse(r);
+		var encryption = db.encryption;
 		var keyId = db.keyId;
 		var publicKey = db.key.replace(/\s+/g, '+');
 		$('.sortsymb').hide();
@@ -151,7 +151,7 @@ $(document).ready(function() {
 
           var participant = $('#add_participant_input').val();			
           var pollData = evaluateTable();
-          savePollData(participant, keyId, publicKey, pollData);
+          savePollData(participant, encryption, keyId, publicKey, pollData);
 
           //shows the vote encrypted message
           $(getEncryptedRow("", 'Your vote is encrypted and saved.')).insertBefore($('#add_participant'));
