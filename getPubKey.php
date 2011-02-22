@@ -1,7 +1,11 @@
 <?php
 
   $func = $_GET["function"];
-  $func();
+  if ($func == "people") {
+    people();
+  } elseif ($func == "pubKey") {
+    pubKey();
+  }
 
   function people() {
     $name = str_replace(" ", "+", $_GET["name"]);
