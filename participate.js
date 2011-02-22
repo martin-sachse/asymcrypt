@@ -128,7 +128,7 @@ $(document).ready(function() {
       method:"get",
       success:function(r){
 		var db = JSON.parse(r);
-		var encryption = db.encryption;
+		var encryption = parseInt(db.encryption);
 		var keyId = db.keyId;
 		var publicKey = db.key.replace(/\s+/g, '+');
 		$('.sortsymb').hide();
