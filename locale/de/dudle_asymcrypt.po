@@ -14,4 +14,13 @@ msgid "Save"
 msgstr "Speichern"
 
 msgid "The name could not be found<br />or the request was to inexplicit."
-msgstr "Der Name konnte nicht gefunden werden,<br /> oder die Anfrage war zu ungenau."
+msgstr "Der Name konnte nicht gefunden werden,<br />oder die Anfrage war zu ungenau."
+
+msgid "Your vote will be encrypted to"
+msgstr "Deine Wahl wird an"
+
+msgid "with the Fingerprint"
+msgstr "verschlüsselt, mit dem Fingerprint"
+
+msgid "Your vote is encrypted and saved."
+msgstr "Deine Wahl ist verschlüsselt und gespeichert."

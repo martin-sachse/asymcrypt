@@ -1,10 +1,11 @@
 /**
 * creates asymcrypt_data.yaml and writes keyId and publicKey into it
 */
-function saveData(publicKey) {
+function saveData(publicKey, keyOwner) {
 	var pKey = new getPublicKey(publicKey);
 	var keyId = pKey.keyid;
 	var publicKey = pKey.pkey.replace(/\n/g,'');
+	var fingerprint = pKey.fp;
 	if(pKey.type == "RSA") {
 	  var encryption = 0;
 	} else if(pKey.type == "ELGAMAL") {
@@ -20,7 +21,9 @@ function saveData(publicKey) {
         "&service=" + "storePublicKey" +
         "&encryption=" + encryption +
         "&keyId=" + keyId +
-        "&key=" + publicKey,
+        "&key=" + publicKey +
+        "&fingerprint=" + fingerprint +
+        "&keyOwner=" + keyOwner,
     	  method:"get",
     	  success:function() {
     	    //not possible under success, where function is called, because page change would be faster than script
@@ -99,12 +102,12 @@ $(document).ready(function(){
          return false;
      	} else {
      	  var person = $('#publicKey').val().split(" ");
-     	  var name = person[2] + " " + person[3];
+     	  var keyOwner = person[2] + " " + person[3];
      	  var keyId = person[0].split("/")[1];
-     	  $.ajax({url: '../extensions/asymcrypt/getPubKey.php?function=pubKey&name='+ name + '&keyid=' + keyId,
+     	  $.ajax({url: '../extensions/asymcrypt/getPubKey.php?function=pubKey&name='+ keyOwner + '&keyid=' + keyId,
      	    method:"get",
      	    success:function(r) {
-     	      saveData(r);
+     	      saveData(r, keyOwner);
      	    }
      	  });
    		}

@@ -63,6 +63,8 @@ if ($c["service"])
     $data["db"]["encryption"] = $c["encryption"]
     $data["db"]["keyId"] = $c["keyId"]
     $data["db"]["key"] = $c["key"]
+    $data["db"]["fingerprint"] = $c["fingerprint"]
+    $data["db"]["keyOwner"] = $c["keyOwner"]
     storeDB()
     openDB()
   end

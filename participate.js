@@ -26,6 +26,7 @@ function parseRow(rowId, decodedText) {
   
   //hides the voting part of the table
   $('#add_participant').hide();
+  $('#hint').hide();
   
   //reads the latest dates/poll-items (@todo rename dates to something more neutral), so changes in the poll will not affect earlier votes
   var dates = new Array();
@@ -105,19 +106,35 @@ function savePollData(participant, encryption, keyId, publicKey, pollData) {
 	saveData = encrypt(encryption, keyId, publicKey, JSON.stringify(saveData));
 	$.ajax({url: extDir + "/pollserver.cgi?pollID=" + pollID + 
 		"&service=" + "storeRow" +
-		"&row=" + JSON.stringify(saveData).replace(/\++/g, '%2B') +
+		"&row=" + encodeURIComponent(JSON.stringify(saveData)) +
 		"&rowname=" + randomRowName(),
 		method:"get"
 	});
 }
 
 /**
-*
+* 
 */
 function getEncryptedRow(id, content) {
   return row = '<tr id="' + id + '"><td colspan="'+$('#separator_top td').attr('colspan')+'" style="text-align:center;background-color:lightblue; width:'+$('#separator_top td').attr('width')+'">' + content + '</td></tr>';
 }
-  
+
+
+/**
+* formats the fingerprint
+*/
+function toFingerprint(fingerprint) {
+  fingerprint = fingerprint.toUpperCase();
+  var to = fingerprint.length;
+  var niceFingerprint = "";
+  for (var i = 0; i < to; i++) {
+    niceFingerprint += fingerprint[i];
+    if((i+1)%4 == 0 && (i+1) != to) {
+      niceFingerprint += ' : ';
+    }
+  }
+  return niceFingerprint;
+}  
 
 $(document).ready(function() {
 	
@@ -131,11 +148,16 @@ $(document).ready(function() {
 		var encryption = parseInt(db.encryption);
 		var keyId = db.keyId;
 		var publicKey = db.key.replace(/\s+/g, '+');
+  	var fingerprint = db.fingerprint;
+		var keyOwner = db.keyOwner;
 		$('.sortsymb').hide();
+		var messageTo = _('Your vote will be encrypted to');
+		var messageWith = _('with the Fingerprint');
+		$('<tr id="hint"><td colspan="4" class="hint">'+messageTo+'<br />'+keyOwner+' '+messageWith+'<br /><span style="font-size: 9px;">'+toFingerprint(fingerprint)+'</span></td></tr>').insertBefore('#add_participant');
         
 		if(JSON.stringify(db.votes) != '{}') {
-          var rowText = _('Encrypted Polldata');
-          $(getEncryptedRow('encryptedData', rowText)).click( function() {
+          var messageRow = _('Encrypted Polldata');
+          $(getEncryptedRow('encryptedData', messageRow)).click( function() {
             var encryptedRows = "";
             var i = 0;
 
@@ -143,7 +165,7 @@ $(document).ready(function() {
              encryptedRows += getEncryptedRow('encRow' + i++, '<textarea rows="1" cols="1" style="width: 95%; margin-top:5px">' + JSON.parse(db.votes[participant]) + '</textarea>');
             }
             $('#encryptedData').replaceWith(encryptedRows);
-          }).insertBefore('#add_participant');
+          }).insertBefore('#hint');
         }
 
         //catches the submit event, so the data will not be saved in the normal data.yaml, but in the asymcrypt_data.yaml
@@ -154,7 +176,8 @@ $(document).ready(function() {
           savePollData(participant, encryption, keyId, publicKey, pollData);
 
           //shows the vote encrypted message
-          $(getEncryptedRow("", 'Your vote is encrypted and saved.')).insertBefore($('#add_participant'));
+          var messageEncrypted = _('Your vote is encrypted and saved.');
+          $(getEncryptedRow("", messageEncrypted)).insertBefore($('#add_participant'));
           $('#add_participant, #encryptedData').hide();
           return false;
         });
